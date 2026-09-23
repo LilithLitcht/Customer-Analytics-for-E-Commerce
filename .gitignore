@@ -1,0 +1,89 @@
+# ==============================================================================
+# .gitignore
+# Dự án: Track B — Customer Analytics cho E-Commerce (IT701220 Data Mining)
+# Người phụ trách: Thành viên A — Data & Infrastructure Lead
+# ==============================================================================
+#
+# NGUYÊN TẮC: chỉ đẩy MÃ NGUỒN lên GitHub, không đẩy dữ liệu và model.
+#
+# Lý do:
+#   1. GitHub giới hạn 100 MB mỗi file — riêng transactions_clean.csv đã gần
+#      100 MB, còn file Excel gốc khoảng 45 MB.
+#   2. Dữ liệu và model đều TÁI TẠO ĐƯỢC: chỉ cần tải lại file gốc từ UCI rồi
+#      chạy lại notebook 01 → 05 theo thứ tự là có đầy đủ.
+#   3. Repo nhẹ thì clone nhanh, lịch sử commit sạch — đúng chuẩn portfolio khi
+#      nộp bài và khi đưa cho nhà tuyển dụng xem sau này.
+#
+# LƯU Ý KHI NỘP BÀI: vì dữ liệu không nằm trên Git, nhóm cần nộp kèm file
+# hướng dẫn nêu rõ cách tải dataset gốc từ UCI và đặt vào data/raw/.
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. DỮ LIỆU — không đẩy lên Git (dung lượng lớn, tái tạo được)
+# ------------------------------------------------------------------------------
+data/raw/*
+data/interim/*
+data/processed/*
+
+# Nhưng VẪN giữ lại cấu trúc thư mục rỗng trên Git, để người clone về biết cần
+# tạo những thư mục nào (dấu "!" nghĩa là ngoại lệ, không bỏ qua file này)
+!data/raw/.gitkeep
+!data/interim/.gitkeep
+!data/processed/.gitkeep
+
+# ------------------------------------------------------------------------------
+# 2. MODEL ĐÃ HUẤN LUYỆN — không đẩy (dung lượng lớn, train lại được)
+# ------------------------------------------------------------------------------
+models/*
+!models/.gitkeep
+
+# ------------------------------------------------------------------------------
+# 3. FILE TẠM CỦA PYTHON
+# ------------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+
+# ------------------------------------------------------------------------------
+# 4. MÔI TRƯỜNG ẢO (virtual environment)
+# ------------------------------------------------------------------------------
+venv/
+env/
+ENV/
+.venv/
+.env
+
+# ------------------------------------------------------------------------------
+# 5. FILE TẠM CỦA JUPYTER NOTEBOOK
+# ------------------------------------------------------------------------------
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
+# ------------------------------------------------------------------------------
+# 6. FILE CẤU HÌNH CỦA IDE / EDITOR (mỗi người một kiểu, không nên chia sẻ)
+# ------------------------------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ------------------------------------------------------------------------------
+# 7. FILE HỆ ĐIỀU HÀNH TỰ SINH
+# ------------------------------------------------------------------------------
+.DS_Store          # macOS
+Thumbs.db          # Windows
+desktop.ini        # Windows
+
+# ------------------------------------------------------------------------------
+# 8. BIỂU ĐỒ XUẤT RA — CÓ ĐẨY LÊN GIT
+# ------------------------------------------------------------------------------
+# Thư mục reports/figures/ KHÔNG bị loại trừ, vì các file .png này:
+#   - Dung lượng nhỏ (vài trăm KB mỗi ảnh)
+#   - Được dùng trực tiếp trong slide thuyết trình và báo cáo cuối kỳ
+#   - Là minh chứng trực quan cho tiến độ công việc khi chấm điểm
