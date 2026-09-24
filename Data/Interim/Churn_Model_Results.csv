@@ -1,0 +1,4 @@
+﻿Model name,Precision,Recall,F1,AUC,Accuracy,Baseline Accuracy,Improvement over Baseline
+Naive Bayes,0.7057,0.9164,0.7973,0.7847,0.7176,0.6062,0.1114
+Random Forest,0.7652,0.8129,0.7883,0.7872,0.7354,0.6062,0.1292
+Decision Tree,0.7639,0.793,0.7782,0.7665,0.7259,0.6062,0.1197
