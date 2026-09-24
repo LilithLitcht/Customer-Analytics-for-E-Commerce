@@ -35,7 +35,7 @@ def compute_inter_purchase_gaps(df: pd.DataFrame,
     print(f"[Compute Inter Purchase Gaps] Thu được {len(gaps_series):,} khoảng cách "
           f"từ {n_repeat_customers:,} khách mua lặp lại.")
     print(f"[Compute Inter Purchase Gaps] Có {n_one_time_customers:,} khách chỉ mua đúng 1 lần "
-          f"({n_one_time_customers / len(purchase_dates_per_customer) * 100:.1f}%) - ")
+          f"({n_one_time_customers / len(purchase_dates_per_customer) * 100:.1f}%) ")
 
     return gaps_series
 
