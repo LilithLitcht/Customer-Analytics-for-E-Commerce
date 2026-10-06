@@ -6,6 +6,7 @@ from imblearn.over_sampling import SMOTE
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import GridSearchCV, StratifiedKFold
 
 import joblib
 import numpy as np
@@ -14,7 +15,6 @@ import pandas as pd
 
 # Hạt giống ngẫu nhiên dùng chung toàn Module, cố định để kết quả tái lập được giữa các lần chạy
 RANDOM_STATE = 42
-
 
 # Hàm xử lý mất cân bằng lớp bằng Smote
 def apply_smote(X_train: pd.DataFrame,
@@ -54,7 +54,6 @@ def train_decision_tree(X_train: pd.DataFrame,
 
     return model
 
-
 def train_random_forest(X_train: pd.DataFrame,
                          y_train: pd.Series,
                          n_estimators: int = 200,
@@ -69,7 +68,6 @@ def train_random_forest(X_train: pd.DataFrame,
 
     return model
 
-
 def train_naive_bayes(X_train: pd.DataFrame, y_train: pd.Series) -> GaussianNB:
 
     model = GaussianNB()
@@ -79,6 +77,49 @@ def train_naive_bayes(X_train: pd.DataFrame, y_train: pd.Series) -> GaussianNB:
 
     return model
 
+
+# Hàm tinh chỉnh siêu tham số bằng GridSearchCV
+def tune_model(model_name: str,
+                X_train: pd.DataFrame,
+                y_train: pd.Series,
+                cv_folds: int = 5,
+                scoring: str = "f1",
+                random_state: int = RANDOM_STATE) -> tuple:
+
+    param_grids = {
+        "decision_tree": {
+            "max_depth": [4, 6, 8, 10, None],
+            "min_samples_leaf": [5, 10, 20, 40],
+        },
+        "random_forest": {
+            "n_estimators": [100, 200, 300],
+            "max_depth": [6, 10, 15, None],
+            "min_samples_leaf": [5, 10, 20],
+        },
+    }
+
+    base_estimators = {
+        "decision_tree": DecisionTreeClassifier(random_state=random_state),
+        "random_forest": RandomForestClassifier(random_state=random_state, n_jobs=-1),
+    }
+
+    if model_name not in param_grids:
+        raise ValueError(f"Tên Model phải là Decision Tree hoặc Random Forest, nhận được: '{model_name}'")
+
+    # StratifiedKFold giữ nguyên tỷ lệ lớp ở mỗi fold, quan trọng vì dữ liệu mất cân bằng
+    cv_strategy = StratifiedKFold(n_splits=cv_folds, shuffle=True, random_state=random_state)
+
+    grid_search = GridSearchCV(estimator=base_estimators[model_name], param_grid=param_grids[model_name], scoring=scoring,
+                               cv=cv_strategy, n_jobs=-1, return_train_score=True,)
+    grid_search.fit(X_train, y_train)
+
+    cv_results_df = pd.DataFrame(grid_search.cv_results_).sort_values("mean_test_score", ascending=False).reset_index(drop=True)
+
+    print(f"[Tune Model] Đã tinh chỉnh '{model_name}' bằng GridSearchCV ({cv_folds}-fold, scoring = {scoring}).")
+    print(f"[Tune Model] Bộ tham số tốt nhất: {grid_search.best_params_}")
+    print(f"[Tune Model] {scoring} trung bình tốt nhất (CV): {grid_search.best_score_:.4f}")
+
+    return grid_search.best_estimator_, grid_search.best_params_, cv_results_df
 
 # Hàm lưu Model ra file
 def save_model(model, output_path: str | Path) -> None:
