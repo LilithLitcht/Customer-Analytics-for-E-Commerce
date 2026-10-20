@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Home.py
-Trang Tổng quan: giới thiệu dự án "1 bài toán, 3 góc nhìn" và các kết quả nổi bật.
-"""
-
 import plotly.graph_objects as go
 import streamlit as st
 
@@ -15,7 +9,6 @@ from Common import (
 
 
 def _the_goc_nhin(icon: str, tieu_de: str, cau_hoi: str, thuat_toan: str, ket_qua: str, mau: str) -> str:
-    """Tạo HTML cho một thẻ 'góc nhìn' (Market Basket, RFM hoặc Churn)."""
     return f"""
     <div class="sky-card fade-in" style="border-top:4px solid {mau};min-height:230px;">
         <div style="font-size:2rem;">{icon}</div>
@@ -29,7 +22,6 @@ def _the_goc_nhin(icon: str, tieu_de: str, cau_hoi: str, thuat_toan: str, ket_qu
 
 
 def Home() -> None:
-    """Vẽ trang Tổng quan."""
     hien_tieu_de_trang(
         "🛍️", "Customer Analytics for E-Commerce",
         "Dataset: <b>Online Retail II</b> (UCI) - Hiểu và giữ chân khách hàng bằng khai phá dữ liệu",
@@ -136,11 +128,11 @@ def Home() -> None:
             <div class="iq-card">
                 <div class="section-title">🧭 Hướng dẫn sử dụng</div>
                 <div class="muted">
-                    <b>Phân khúc RFM</b>: xem hồ sơ từng nhóm khách và cách các nhóm phân bố.<br>
-                    <b>Dự đoán Churn</b>: tra cứu khách trong tập Test, nhập khách mới
+                    <b>Phân khúc RFM</b>: Xem hồ sơ từng nhóm khách và cách các nhóm phân bố.<br>
+                    <b>Dự đoán Churn</b>: Tra cứu khách trong tập Test, nhập khách mới
                     hoặc lấy danh sách khách cần chăm sóc ưu tiên.<br>
-                    <b>Gợi ý Cross-sell</b>: xem sản phẩm thường mua kèm theo phân khúc hoặc theo sản phẩm.<br>
-                    <b>Đánh giá mô hình</b>: so sánh mô hình, đường ROC và thử đổi ngưỡng quyết định.
+                    <b>Gợi ý Cross-sell</b>: Xem sản phẩm thường mua kèm theo phân khúc hoặc theo sản phẩm.<br>
+                    <b>Đánh giá mô hình</b>: So sánh mô hình, đường ROC và thử đổi ngưỡng quyết định.
                 </div>
             </div>
             """,

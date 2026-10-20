@@ -1,12 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Predict.py
-Trang Dự đoán Churn gồm 3 tab:
-  1. Tra cứu khách hàng trong tập Test (có đối chiếu nhãn thực tế).
-  2. Nhập thông số một khách hàng mới -> phân khúc + rủi ro Churn + gợi ý bán kèm.
-  3. Danh sách khách cần chăm sóc ưu tiên (lọc, sắp xếp, tải CSV).
-"""
-
 import pandas as pd
 import streamlit as st
 
@@ -19,21 +10,13 @@ from Common import (
 
 # Các ô nhập liệu của tab "Nhập khách hàng mới" (AvgOrderValue được tự tính nên không có ô riêng)
 KHOA_NHAP = ["Recency", "Frequency", "Monetary", "Tenure", "AvgGapDays"]
-KICH_BAN_BAN_DAU = "Khách phổ thông (mua thỉnh thoảng)"
+KICH_BAN_BAN_DAU = "Khách phổ thông (Mua thỉnh thoảng)"
 
 
 def hien_ket_qua_du_doan(dac_trung: dict, ten_phan_khuc: str, ten_mo_hinh: str, mo_hinh: dict,
                          khoa: str, nhan_thuc_te: int = None, xac_suat_da_luu: float = None) -> None:
-    """
-    Hiển thị toàn bộ kết quả cho một khách hàng: thẻ rủi ro, đồng hồ xác suất, so sánh các mô hình,
-    hành động đề xuất và gợi ý bán kèm theo phân khúc.
-    - khoa: tiền tố để các biểu đồ ở các tab không bị trùng mã định danh.
-    - nhan_thuc_te: nhãn Churn thật (chỉ có với khách trong tập Test).
-    - xac_suat_da_luu: xác suất đã lưu trong file CSV, dùng để đối chiếu với kết quả tính lại.
-    """
     dau_vao = pd.DataFrame([dac_trung])[DAC_TRUNG].astype(float)
 
-    # Chạy tất cả mô hình trên cùng một khách hàng
     ket_qua = {}
     for ten, mo_hinh_con in mo_hinh.items():
         ket_qua[ten] = (float(mo_hinh_con.predict_proba(dau_vao)[0, 1]), int(mo_hinh_con.predict(dau_vao)[0]))
@@ -44,7 +27,6 @@ def hien_ket_qua_du_doan(dac_trung: dict, ten_phan_khuc: str, ten_mo_hinh: str, 
     cau_du_doan = (f"Dự đoán: khách sẽ KHÔNG quay lại trong {cua_so} ngày tới" if nhan_du_doan == 1
                    else f"Dự đoán: khách sẽ quay lại mua trong {cua_so} ngày tới")
 
-    # Dòng đối chiếu nhãn thực tế (nếu có)
     dong_thuc_te = ""
     if nhan_thuc_te is not None:
         dung = int(nhan_thuc_te) == nhan_du_doan
@@ -84,7 +66,6 @@ def hien_ket_qua_du_doan(dac_trung: dict, ten_phan_khuc: str, ten_mo_hinh: str, 
         st.caption(f"Đối chiếu: xác suất đã lưu trong file kết quả = {xac_suat_da_luu:.4f}; "
                    f"tính lại từ file mô hình .pkl = {xac_suat:.4f}.")
 
-    # So sánh các mô hình (giống kiểu 'So sánh cả 3' ở bản cũ)
     if len(ket_qua) > 1:
         st.markdown("##### So sánh các mô hình")
         bang = pd.DataFrame([
@@ -109,7 +90,6 @@ def hien_ket_qua_du_doan(dac_trung: dict, ten_phan_khuc: str, ten_mo_hinh: str, 
         unsafe_allow_html=True,
     )
 
-    # Gợi ý bán kèm theo luật kết hợp của phân khúc
     goi_y = lay_goi_y_phan_khuc(ten_phan_khuc, so_luat=3)
     if not goi_y.empty:
         st.markdown(f"##### 🛒 Gợi ý bán kèm cho phân khúc {ten_phan_khuc}")
@@ -126,11 +106,7 @@ def hien_ket_qua_du_doan(dac_trung: dict, ten_phan_khuc: str, ten_mo_hinh: str, 
         hien_bang(bang)
 
 
-# =============================================================================
-# TAB 1: TRA CỨU KHÁCH HÀNG TRONG TẬP TEST
-# =============================================================================
 def _tab_tra_cuu(du_doan: pd.DataFrame, mo_hinh: dict) -> None:
-    """Chọn một Customer ID trong tập Test và xem dự đoán so với thực tế."""
     st.markdown(
         """
         <div class="sky-card fade-in">
@@ -169,17 +145,12 @@ def _tab_tra_cuu(du_doan: pd.DataFrame, mo_hinh: dict) -> None:
                          nhan_thuc_te=int(dong["Churn thực tế"]), xac_suat_da_luu=xac_suat_da_luu)
 
 
-# =============================================================================
-# TAB 2: NHẬP KHÁCH HÀNG MỚI
-# =============================================================================
 def _khoi_tao_gia_tri_nhap() -> None:
-    """Đặt giá trị mặc định cho các ô nhập ở lần chạy đầu tiên."""
     for khoa, gia_tri in KICH_BAN_MAU[KICH_BAN_BAN_DAU].items():
         st.session_state.setdefault(f"nhap_{khoa}", gia_tri)
 
 
 def _ap_dung_kich_ban() -> None:
-    """Hàm gọi lại: khi chọn kịch bản mẫu thì điền sẵn các ô nhập."""
     ten = st.session_state.get("nhap_kich_ban")
     if ten in KICH_BAN_MAU:
         for khoa, gia_tri in KICH_BAN_MAU[ten].items():
@@ -187,7 +158,6 @@ def _ap_dung_kich_ban() -> None:
 
 
 def _tab_nhap_moi(mo_hinh: dict) -> None:
-    """Nhập thông số một khách hàng bất kỳ và xem phân khúc, rủi ro Churn, gợi ý bán kèm."""
     st.markdown(
         """
         <div class="sky-card fade-in">
@@ -256,11 +226,7 @@ def _tab_nhap_moi(mo_hinh: dict) -> None:
     hien_ket_qua_du_doan(dac_trung, ten_phan_khuc, ten_mo_hinh, mo_hinh, "khach_moi")
 
 
-# =============================================================================
-# TAB 3: DANH SÁCH KHÁCH CẦN CHĂM SÓC ƯU TIÊN
-# =============================================================================
 def _tab_danh_sach(du_doan: pd.DataFrame) -> None:
-    """Lọc khách có rủi ro cao, sắp xếp theo giá trị hoặc xác suất và tải về CSV."""
     ten_mo_hinh_luu = str(du_doan["Mô hình sử dụng"].iloc[0]) if "Mô hình sử dụng" in du_doan.columns else "mô hình đã chọn"
     st.markdown(
         f"""
@@ -317,7 +283,6 @@ def _tab_danh_sach(du_doan: pd.DataFrame) -> None:
 
 
 def Predict() -> None:
-    """Vẽ trang Dự đoán Churn."""
     cua_so = THONG_TIN_DU_AN["cua_so_churn_ngay"]
     hien_tieu_de_trang("📉", "Dự đoán khách hàng rời bỏ (Churn)",
                        f"Khách không mua lại trong {cua_so} ngày được coi là rời bỏ - kết quả Notebook 05")

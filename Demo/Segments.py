@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Segments.py
-Trang Phân khúc RFM: hồ sơ từng phân khúc, phân bố Recency/Frequency/Monetary
-và vị trí khách hàng trong không gian Frequency x Monetary.
-"""
-
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
@@ -16,7 +9,6 @@ from Common import (
 
 
 def _tong_hop_phan_khuc(df):
-    """Tính số khách, tỷ lệ, RFM trung bình và tỷ trọng Monetary của từng phân khúc (xếp theo Monetary TB giảm dần)."""
     bang = df.groupby("Tên phân khúc").agg(
         so_khach=("Customer ID", "nunique"),
         recency_tb=("Recency", "mean"),
@@ -30,7 +22,6 @@ def _tong_hop_phan_khuc(df):
 
 
 def _the_phan_khuc(ten: str, dong) -> str:
-    """Tạo HTML cho thẻ hồ sơ một phân khúc."""
     mau = mau_phan_khuc(ten)
     return f"""
     <div class="sky-card fade-in" style="border-top:4px solid {mau};text-align:center;">
@@ -50,7 +41,6 @@ def _the_phan_khuc(ten: str, dong) -> str:
 
 
 def _tab_tong_quan(df, tong_hop) -> None:
-    """Tab Tổng quan: số khách, đóng góp chi tiêu, bảng hồ sơ và kiểm tra đồng bộ mô hình."""
     ban_do_mau = ban_do_mau_phan_khuc(tong_hop.index)
     cot_trai, cot_phai = st.columns(2, gap="large")
 
@@ -93,7 +83,6 @@ def _tab_tong_quan(df, tong_hop) -> None:
 
 
 def _tab_phan_bo(df) -> None:
-    """Tab Phân bố RFM: histogram và boxplot một chỉ số theo từng phân khúc."""
     ban_do_mau = ban_do_mau_phan_khuc(df["Tên phân khúc"].unique())
     cot_chon, cot_log = st.columns([2, 1])
     with cot_chon:
@@ -123,7 +112,6 @@ def _tab_phan_bo(df) -> None:
 
 
 def _tab_khong_gian(df) -> None:
-    """Tab Không gian khách hàng: biểu đồ phân tán Frequency x Monetary (thang log), màu theo phân khúc."""
     ban_do_mau = ban_do_mau_phan_khuc(df["Tên phân khúc"].unique())
     so_mau = st.slider("Số khách hiển thị (lấy ngẫu nhiên)", 500, min(5000, len(df)), min(3000, len(df)),
                        step=500, key="pk_so_mau") if len(df) > 1000 else len(df)
@@ -140,7 +128,6 @@ def _tab_khong_gian(df) -> None:
 
 
 def _tab_hinh_notebook() -> None:
-    """Tab Hình từ Notebook 04: các biểu đồ chọn số cụm và so sánh thuật toán."""
     cac_hinh = [
         ("Elbow", "Chọn số cụm: Elbow và Silhouette"),
         ("KMeans vs KMedoids", "So sánh K-Means và K-Medoids (PAM)"),
@@ -156,7 +143,6 @@ def _tab_hinh_notebook() -> None:
 
 
 def Segments() -> None:
-    """Vẽ trang Phân khúc RFM."""
     hien_tieu_de_trang("💎", "Phân khúc khách hàng RFM",
                        "K-Means trên Recency, Frequency, Monetary (đã log và chuẩn hoá) - kết quả Notebook 04")
     try:

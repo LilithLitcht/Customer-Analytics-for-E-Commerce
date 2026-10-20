@@ -1,17 +1,9 @@
-# -*- coding: utf-8 -*-
-"""
-Main.py
-Điểm vào của ứng dụng Demo "Customer Analytics for E-Commerce".
-Chạy từ thư mục gốc dự án:   streamlit run Demo/Main.py
-"""
-
 import sys
 import warnings
 from pathlib import Path
 
 warnings.filterwarnings("ignore")
 
-# Đảm bảo import được các file cùng thư mục Demo dù chạy từ đâu
 THU_MUC_DEMO = Path(__file__).resolve().parent
 if str(THU_MUC_DEMO) not in sys.path:
     sys.path.insert(0, str(THU_MUC_DEMO))
@@ -19,7 +11,6 @@ if str(THU_MUC_DEMO) not in sys.path:
 import streamlit as st
 from streamlit_option_menu import option_menu
 
-# Cấu hình trang: bắt buộc là lệnh Streamlit đầu tiên
 st.set_page_config(
     page_title="Customer Analytics - Demo",
     page_icon="🛍️",
@@ -34,19 +25,17 @@ from Predict import Predict
 from Recommend import Recommend
 from Segments import Segments
 
-# Danh sách trang: (tên hiển thị, biểu tượng Bootstrap, hàm vẽ trang)
 CAC_TRANG = [
     ("Tổng quan", "house-fill", Home),
     ("Phân khúc RFM", "diagram-3-fill", Segments),
     ("Dự đoán Churn", "graph-up-arrow", Predict),
     ("Gợi ý Cross-sell", "cart-check-fill", Recommend),
     ("Đánh giá mô hình", "bar-chart-fill", Evaluation),
-    ("Về nhóm", "people-fill", AboutMe),
+    ("Thông tin nhóm", "people-fill", AboutMe),
 ]
 
 
 def _nap_css() -> None:
-    """Nạp file Styles.css (nếu có) để áp dụng giao diện."""
     duong_dan = THU_MUC_DEMO / "Styles.css"
     if duong_dan.exists():
         with open(duong_dan, encoding="utf-8") as tep:
@@ -54,9 +43,7 @@ def _nap_css() -> None:
 
 
 def _ve_thanh_ben() -> str:
-    """Vẽ thanh bên gồm logo, menu điều hướng, chân trang; trả về tên trang đang chọn."""
     with st.sidebar:
-        # Logo: dùng Logo.png trong thư mục Demo nếu có, không thì hiển thị tiêu đề chữ
         duong_dan_logo = THU_MUC_DEMO / "Logo.png"
         if duong_dan_logo.exists():
             st.image(str(duong_dan_logo))
@@ -128,7 +115,6 @@ def _ve_thanh_ben() -> str:
 
 
 def main() -> None:
-    """Nạp giao diện, vẽ thanh bên rồi hiển thị đúng trang được chọn."""
     _nap_css()
     trang_chon = _ve_thanh_ben()
 

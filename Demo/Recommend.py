@@ -1,12 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Recommend.py
-Trang Gợi ý Cross-sell từ luật kết hợp (Notebook 03):
-  1. Theo phân khúc: sản phẩm thường được mua kèm trong từng nhóm khách.
-  2. Theo sản phẩm: chọn một sản phẩm, xem các sản phẩm thường mua kèm.
-  3. Tổng quan luật: Support x Confidence của toàn bộ luật.
-"""
-
 import plotly.express as px
 import streamlit as st
 
@@ -17,21 +8,16 @@ from Common import (
 
 
 def _ve_cot_ngang(df_luat, cot_gia_tri: str, mau: str, tieu_de: str, khoa: str) -> None:
-    """Vẽ biểu đồ cột ngang cho các luật (nhãn: 'A → B'), luật mạnh nhất nằm trên cùng."""
     du_lieu = df_luat.copy()
     du_lieu["Luật"] = du_lieu["Antecedents Name"].str.slice(0, 40) + " → " + du_lieu["Consequents Name"].str.slice(0, 40)
-    du_lieu = du_lieu.iloc[::-1]   # Đảo thứ tự để luật đầu bảng nằm trên cùng
+    du_lieu = du_lieu.iloc[::-1]   
     bieu_do = px.bar(du_lieu, x=cot_gia_tri, y="Luật", orientation="h", text=cot_gia_tri, title=tieu_de)
     bieu_do.update_traces(marker_color=mau, texttemplate="%{text:.2f}", textposition="outside")
     bieu_do.update_layout(yaxis_title="", xaxis_title=cot_gia_tri)
     st.plotly_chart(dinh_dang_bieu_do(bieu_do, max(300, 60 + 34 * len(du_lieu))), key=khoa)
 
 
-# =============================================================================
-# TAB 1: THEO PHÂN KHÚC
-# =============================================================================
 def _tab_theo_phan_khuc(luat_phan_khuc) -> None:
-    """Hiển thị các luật mạnh nhất của một phân khúc được chọn."""
     ds_phan_khuc = sorted(luat_phan_khuc["Tên phân khúc"].unique())
     cot1, cot2 = st.columns([1.3, 1])
     with cot1:
@@ -61,11 +47,7 @@ def _tab_theo_phan_khuc(luat_phan_khuc) -> None:
     )
 
 
-# =============================================================================
-# TAB 2: THEO SẢN PHẨM
-# =============================================================================
 def _tab_theo_san_pham(luat_tong) -> None:
-    """Chọn một sản phẩm và xem các sản phẩm thường được mua kèm."""
     # Danh sách sản phẩm: các sản phẩm đứng một mình ở vế trái của luật
     luat_don = luat_tong[luat_tong["So SP ve trai"] == 1]
     ds_san_pham = sorted(luat_don["Antecedents Name"].unique())
@@ -95,11 +77,7 @@ def _tab_theo_san_pham(luat_tong) -> None:
                "Luật này tính trên toàn bộ hoá đơn, kể cả hoá đơn không có Customer ID.")
 
 
-# =============================================================================
-# TAB 3: TỔNG QUAN LUẬT
-# =============================================================================
 def _tab_tong_quan_luat(luat_tong) -> None:
-    """Biểu đồ phân tán Support x Confidence của các luật 1→1, màu theo Lift."""
     luat = loc_luat(luat_tong, chi_1_1=True)
     so_mau = min(3000, len(luat))
     if so_mau == 0:
@@ -118,7 +96,6 @@ def _tab_tong_quan_luat(luat_tong) -> None:
 
 
 def Recommend() -> None:
-    """Vẽ trang Gợi ý Cross-sell."""
     hien_tieu_de_trang("🛒", "Gợi ý bán kèm (Cross-sell)",
                        "Luật kết hợp từ FP-Growth: khách mua sản phẩm này thường mua kèm sản phẩm nào - Notebook 03")
     try:

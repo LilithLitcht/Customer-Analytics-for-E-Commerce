@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
 """
-Evaluation.py
 Trang Đánh giá mô hình Churn gồm 3 tab:
   1. So sánh mô hình (bảng và biểu đồ từ Churn_Model_Results.csv, có baseline).
   2. ROC và ngưỡng quyết định (tính trực tiếp từ các file .pkl trên tập Test).
@@ -22,17 +20,12 @@ CAC_CHI_SO = ["Precision", "Recall", "F1", "AUC"]
 
 
 def _thu_tu_mo_hinh(ten_mo_hinh: str):
-    """Khoá sắp xếp: nhóm theo thuật toán, bản gốc đứng trước bản Tuned."""
     ten_goc = ten_mo_hinh.replace(" (Tuned)", "")
     thu_tu_goc = list(MAU_MO_HINH).index(ten_goc) if ten_goc in MAU_MO_HINH else 99
     return (thu_tu_goc, "(Tuned)" in ten_mo_hinh)
 
 
-# =============================================================================
-# TAB 1: SO SÁNH MÔ HÌNH
-# =============================================================================
 def _tab_so_sanh(ket_qua, du_doan) -> None:
-    """Bảng và biểu đồ so sánh các mô hình, có đường baseline."""
     ti_le_churn = float(du_doan["Churn thực tế"].mean())
     f1_baseline = tinh_baseline_f1(ti_le_churn)
     tot_nhat_f1 = ket_qua.loc[ket_qua["F1"].idxmax()]
@@ -41,7 +34,7 @@ def _tab_so_sanh(ket_qua, du_doan) -> None:
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("F1 cao nhất", f"{tot_nhat_f1['F1']:.4f}", delta=str(tot_nhat_f1["Model name"]), delta_color="off")
     c2.metric("AUC cao nhất", f"{tot_nhat_auc['AUC']:.4f}", delta=str(tot_nhat_auc["Model name"]), delta_color="off")
-    c3.metric("Baseline F1", f"{f1_baseline:.4f}", help="Mô hình ngây thơ luôn đoán 'rời bỏ' (Precision = tỷ lệ Churn, Recall = 1)")
+    c3.metric("Baseline F1", f"{f1_baseline:.4f}", help="Mô hình Baseline luôn đoán 'rời bỏ' (Precision = Tỷ lệ Churn, Recall = 1)")
     c4.metric("Tỷ lệ Churn tập Test", f"{ti_le_churn * 100:.1f}%")
 
     # Bảng kết quả theo thứ tự nhóm thuật toán
@@ -60,7 +53,7 @@ def _tab_so_sanh(ket_qua, du_doan) -> None:
                         pattern=dict(shape="/" if la_tuned else "", fgcolor="white")),
             text=[f"{float(dong[c]):.3f}" for c in CAC_CHI_SO], textposition="outside",
         ))
-    bieu_do.update_layout(barmode="group", title="So sánh các mô hình: tham số mặc định (đặc) và sau GridSearchCV (sọc)",
+    bieu_do.update_layout(barmode="group", title="So sánh các mô hình: Tham số mặc định (đặc) và Sau GridSearchCV (sọc)",
                           yaxis=dict(range=[0, 1.1], title="Giá trị"), legend=dict(orientation="h", y=-0.15))
     st.plotly_chart(dinh_dang_bieu_do(bieu_do, 440), key="dg_so_sanh")
 
@@ -72,30 +65,26 @@ def _tab_so_sanh(ket_qua, du_doan) -> None:
         <div class="iq-card">
             <div class="section-title">📝 Nhận xét</div>
             <div class="muted">
-                • <b>{tot_nhat_f1['Model name']}</b> dẫn đầu F1 ({tot_nhat_f1['F1']:.4f}), hơn baseline
+                • <b>{tot_nhat_f1['Model name']}</b> dẫn đầu F1 ({tot_nhat_f1['F1']:.4f}), hơn Baseline
                 <b>{tot_nhat_f1['F1'] - f1_baseline:+.4f}</b>; mô hình có AUC cao nhất là
                 <b>{tot_nhat_auc['Model name']}</b> ({tot_nhat_auc['AUC']:.4f}).<br>
                 • Chênh lệch F1 giữa hai mô hình đứng đầu chỉ <b>{chenh_f1:.4f}</b>, chưa được kiểm định thống kê
                 nên thứ hạng không mang tính quyết định.<br>
-                • Tinh chỉnh siêu tham số không phải lúc nào cũng cải thiện: hãy so sánh từng cặp gốc và Tuned trong bảng.
+                • Tinh chỉnh siêu tham số không phải lúc nào cũng cải thiện: Hãy so sánh từng cặp gốc và Tuned trong bảng.
             </div>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    with st.expander("Biểu đồ từ notebook (benchmark và độ quan trọng đặc trưng)"):
-        co_hinh = hien_anh("Benchmark", "Benchmark Apriori và FP-Growth (Notebook 03)")
-        co_hinh = hien_anh("Feature Importance", "Độ quan trọng đặc trưng của Random Forest (Notebook 05)") or co_hinh
+    with st.expander("Biểu đồ từ Notebook (Benchmark và độ quan trọng đặc trưng)"):
+        co_hinh = hien_anh("Benchmark", "Benchmark Apriori và FP-Growth")
+        co_hinh = hien_anh("Feature Importance", "Độ quan trọng đặc trưng của Random Forest") or co_hinh
         if not co_hinh:
             st.info("Chưa tìm thấy ảnh trong thư mục Figures.")
 
 
-# =============================================================================
-# TAB 2: ROC VÀ NGƯỠNG QUYẾT ĐỊNH
-# =============================================================================
 def _tab_roc_nguong() -> None:
-    """Vẽ ROC của các mô hình .pkl trên tập Test và cho phép đổi ngưỡng quyết định."""
     xac_suat_cac_mo_hinh = tinh_xac_suat_test()
     if not xac_suat_cac_mo_hinh:
         st.info("Không tìm thấy mô hình .pkl nên không tính được ROC. Hãy chạy Notebook 05.")
@@ -104,7 +93,7 @@ def _tab_roc_nguong() -> None:
     f1_baseline = tinh_baseline_f1(float(y_that.mean()))
 
     st.markdown(
-        '<div class="muted">Các đường ROC bên dưới được tính trực tiếp từ các file mô hình <b>.pkl</b> '
+        '<div class="muted">Các đường ROC bên dưới được tính trực tiếp từ các File mô hình <b>.pkl</b> '
         "trên tập Test, nên giá trị AUC phải khớp với bảng ở tab trước (với mô hình không tinh chỉnh).</div>",
         unsafe_allow_html=True,
     )
@@ -115,7 +104,7 @@ def _tab_roc_nguong() -> None:
         chi_so = ds_mo_hinh.index(MO_HINH_MAC_DINH) if MO_HINH_MAC_DINH in ds_mo_hinh else 0
         ten_chon = st.selectbox("Mô hình", ds_mo_hinh, index=chi_so, key="dg_mo_hinh")
     with cot_nguong:
-        nguong = st.slider("Ngưỡng quyết định (xác suất ≥ ngưỡng thì dự đoán 'rời bỏ')", 0.05, 0.95, 0.5, 0.05, key="dg_nguong")
+        nguong = st.slider("Ngưỡng quyết định (Xác suất ≥ ngưỡng thì dự đoán 'rời bỏ')", 0.05, 0.95, 0.5, 0.05, key="dg_nguong")
 
     chi_so_nguong = tinh_chi_so_theo_nguong(y_that, xac_suat_cac_mo_hinh[ten_chon], nguong)
 
@@ -169,7 +158,6 @@ def _tab_roc_nguong() -> None:
 # TAB 3: PHƯƠNG PHÁP VÀ HẠN CHẾ
 # =============================================================================
 def _tab_phuong_phap(du_doan) -> None:
-    """Trình bày thiết kế thực nghiệm và các hạn chế đã tự đánh giá."""
     thong_tin = THONG_TIN_DU_AN
     ti_le_test = float(du_doan["Churn thực tế"].mean()) * 100
     st.markdown(
@@ -216,7 +204,6 @@ def _tab_phuong_phap(du_doan) -> None:
 
 
 def Evaluation() -> None:
-    """Vẽ trang Đánh giá mô hình."""
     hien_tieu_de_trang("📊", "Đánh giá mô hình Churn",
                        "So sánh Decision Tree, Random Forest, Naive Bayes trên tập Test tách theo thời gian - Notebook 05")
     try:

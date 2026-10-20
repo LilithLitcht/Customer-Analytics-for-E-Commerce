@@ -1,29 +1,23 @@
-# -*- coding: utf-8 -*-
-"""
-AboutMe.py
-Trang Về nhóm: giới thiệu đồ án, công nghệ sử dụng, các notebook và thành viên.
-"""
-
 import streamlit as st
 
-# Danh sách thành viên. Nếu nhóm có thêm người (Track B yêu cầu 4-5 thành viên),
-# chỉ cần thêm một dòng vào danh sách này, giao diện sẽ tự co giãn.
 THANH_VIEN = [
     {"ten": "Trần Văn Khang", "mssv": "52400199", "vai_tro": "Data & Infrastructure Lead",
      "nhiem_vu": "Notebook 01 và 02: Data Understanding, Data Preparation", "mau": "#0ea5e9"},
+    
     {"ten": "Trần Tấn Lực", "mssv": "52400055", "vai_tro": "Pattern Mining Lead",
      "nhiem_vu": "Notebook 03 và 04: Market Basket Analysis, RFM Clustering", "mau": "#f59e0b"},
+    
     {"ten": "Ngô Đức Huân", "mssv": "52400192", "vai_tro": "Classification & Integration Lead",
      "nhiem_vu": "Notebook 05 và 06: Churn Classification, Evaluation & Integration", "mau": "#22c55e"},
 ]
 
 # Bảng các notebook của dự án
 CAC_NOTEBOOK = [
-    ("01", "Data Understanding", "Khám phá dữ liệu, phát hiện 7 vấn đề chất lượng, phân tích outlier"),
-    ("02", "Data Preparation", "Làm sạch 5 bước, tạo RFM, xuất dữ liệu đã xử lý"),
-    ("03", "Market Basket Analysis", "Apriori so với FP-Growth, luật kết hợp, luật theo phân khúc"),
-    ("04", "RFM Clustering", "K-Means so với K-Medoids (PAM), chọn số cụm, đặt tên phân khúc"),
-    ("05", "Churn Classification", "Nhãn Churn theo phân phối thực tế, SMOTE, 3 thuật toán, GridSearchCV"),
+    ("01", "Data Understanding", "Khám phá dữ liệu - Phát hiện 7 vấn đề chất lượng - Phân tích Outliers"),
+    ("02", "Data Preparation", "Làm sạch 5 bước - Tạo RFM - Xuất dữ liệu đã xử lý"),
+    ("03", "Market Basket Analysis", "Apriori so với FP-Growth - Luật kết hợp - Luật theo phân khúc"),
+    ("04", "RFM Clustering", "K-Means so với K-Medoids (PAM) - Chọn số cụm - Đặt tên phân khúc"),
+    ("05", "Churn Classification", "Nhãn Churn theo phân phối thực tế - SMOTE - 3 Thuật toán - GridSearchCV"),
     ("06", "Evaluation & Comparison", "Tổng hợp ba kỹ thuật và đối chiếu chéo phân khúc với Churn"),
 ]
 
@@ -33,15 +27,13 @@ CONG_NGHE = ["Python", "pandas", "NumPy", "scikit-learn", "imbalanced-learn", "m
 
 
 def AboutMe() -> None:
-    """Vẽ trang Về nhóm."""
-    # Khung tiêu đề lớn
     st.markdown(
         """
         <div style="padding:28px;border-radius:20px;
                     background:linear-gradient(135deg,#38bdf8,#60a5fa,#93c5fd);
                     color:white;box-shadow:0 8px 25px rgba(56,189,248,.25);margin-bottom:16px;">
             <h1 style="margin-bottom:6px;color:white;">🛍️ Customer Analytics for E-Commerce</h1>
-            <p style="font-size:18px;margin:0;">Đồ án cuối kỳ • Khai phá dữ liệu (IT701220) • Track B: Applied Project</p>
+            <p style="font-size:18px;margin:0;">Đồ án cuối kỳ • Khai phá dữ liệu và Khai phá tri thức • Track B: Applied Project</p>
             <p style="margin:6px 0 0 0;">Market Basket • RFM Clustering • Churn Classification • Streamlit Demo</p>
         </div>
         """,
@@ -50,7 +42,7 @@ def AboutMe() -> None:
 
     # Bốn thẻ thông tin nhanh
     the_nhanh = [
-        ("📚", "Học phần", "Khai phá dữ liệu", "IT701220"),
+        ("📚", "Học phần", "Khai phá dữ liệu và Khai phá tri thức", "Đồ án cuối kỳ"),
         ("📊", "Dataset", "Online Retail II", "UCI · 2009-2011"),
         ("🧩", "Kỹ thuật", "3 góc nhìn", "MBA · RFM · Churn"),
         ("💻", "Demo", "Streamlit", "Python · Plotly"),
@@ -81,7 +73,7 @@ def AboutMe() -> None:
         st.markdown(
             f"""
             <div class="iq-card fade-in">
-                <div class="section-title">📓 Các notebook của dự án</div>
+                <div class="section-title">📓 Các Notebooks của dự án</div>
                 {dong_notebook}
             </div>
             """,
