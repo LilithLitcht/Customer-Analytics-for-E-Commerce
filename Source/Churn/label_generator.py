@@ -1,4 +1,5 @@
-# Sinh nhãn Churn cho bài toán phân lớp dự đoán khách hàng rời bỏ, dựa trên phân tích thống kê khoảng cách giữa các lần mua liên tiếp thay vì chọn ngưỡng tuỳ tiện.
+# Sinh nhãn Churn cho bài toán phân lớp dự đoán khách hàng rời bỏ
+# Dựa trên phân tích thống kê khoảng cách giữa các lần mua liên tiếp thay vì chọn ngưỡng tuỳ tiện.
 
 import numpy as np
 import pandas as pd
@@ -6,10 +7,21 @@ import pandas as pd
 # Tính khoảng cách giữa các lần mua liên tiếp
 def compute_inter_purchase_gaps(df: pd.DataFrame,
                                   customer_id_col: str = "Customer ID",
-                                  date_col: str = "InvoiceDate") -> pd.Series:
+                                  date_col: str = "InvoiceDate",
+                                  cutoff_date=None) -> pd.Series:
 
     working_df = df[df[customer_id_col].notna()].copy()
     working_df[date_col] = pd.to_datetime(working_df[date_col])
+
+    # Nếu có cutoff_date, lọc bỏ mọi giao dịch xảy ra sau mốc này trước khi tính gap 
+    # Đảm bảo ngưỡng Churn chỉ được chọn dựa trên dữ liệu "đã biết" tại thời điểm train_snapshot
+    # Không nhìn thấy tương lai.
+    if cutoff_date is not None:
+        cutoff_timestamp = pd.Timestamp(cutoff_date)
+        n_before_cutoff_filter = len(working_df)
+        working_df = working_df[working_df[date_col] <= cutoff_timestamp]
+        print(f"[Compute Inter Purchase Gaps] Đã lọc theo cutoff_date = {cutoff_timestamp.date()}: "
+              f"còn {len(working_df):,}/{n_before_cutoff_filter:,} dòng giao dịch.")
 
     # Chuẩn hoá về mốc ngày (00:00) để gộp các hoá đơn trong cùng một ngày
     working_df["PurchaseDate"] = working_df[date_col].dt.normalize()
@@ -175,8 +187,7 @@ def add_churn_features(rfm_df: pd.DataFrame,
     avg_gap = working_df.groupby(customer_id_col)["PurchaseDate"].apply(average_gap_of_customer)
     result_df["AvgGapDays"] = result_df[customer_id_col].map(avg_gap)
 
-    # Khách mua 1 lần: điền bằng chính Tenure của họ 
-    # lặng suốt từ lần mua đầu đến giờ", hợp lý hơn nhiều so với điền 0.
+    # Khách mua 1 lần, điền bằng chính Tenure của họ lặng suốt từ lần mua đầu đến giờ", hợp lý hơn nhiều so với điền 0.
     result_df["AvgGapDays"] = result_df["AvgGapDays"].fillna(result_df["Tenure"]).round(1)
 
     print(f"[Add Churn Features] Đã bổ sung 3 đặc trưng: AvgOrderValue, Tenure, AvgGapDays cho {len(result_df):,} khách hàng.")

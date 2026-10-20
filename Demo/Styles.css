@@ -1,0 +1,198 @@
+/* ============================================================
+   Styles.css - Customer Analytics Demo
+   Bảng màu: xanh nước biển nhạt + chàm/tím (kế thừa giao diện cũ)
+   ============================================================ */
+
+/* Ẩn menu và chân trang mặc định của Streamlit */
+#MainMenu {
+  visibility: hidden;
+}
+footer {
+  visibility: hidden;
+}
+header[data-testid="stHeader"] {
+  background: transparent !important;
+  border-bottom: none !important;
+}
+
+/* Nền toàn trang */
+.stApp {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fcff 20%, #eef9ff 55%, #e0f7ff 100%);
+}
+
+/* Thanh bên */
+[data-testid="stSidebar"] {
+  background: linear-gradient(180deg, #0f3d5e 0%, #1565a8 45%, #2d8fd6 100%) !important;
+  border-right: 1px solid rgba(165, 180, 252, 0.2);
+}
+[data-testid="stSidebar"] * {
+  color: #e0e7ff !important;
+}
+
+/* Thẻ nội dung (dùng cả hai tên lớp cho đồng nhất) */
+.iq-card,
+.sky-card {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #d7eefb;
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 14px rgba(60, 140, 200, 0.1);
+  transition: box-shadow 0.25s, transform 0.2s;
+}
+.iq-card:hover,
+.sky-card:hover {
+  box-shadow: 0 6px 26px rgba(60, 140, 200, 0.18);
+  transform: translateY(-1px);
+}
+
+/* Thẻ tiêu đề lớn */
+.hero-card {
+  background: linear-gradient(135deg, #4338ca 0%, #6d28d9 40%, #1d4ed8 100%);
+  border-radius: 18px;
+  padding: 26px 32px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 32px rgba(67, 56, 202, 0.3);
+}
+.hero-card * {
+  color: #fff !important;
+}
+
+/* Thẻ kết quả dự đoán */
+.result-card {
+  border-radius: 16px;
+  padding: 22px 26px;
+  text-align: center;
+  animation: fadeInUp 0.4s ease-out;
+}
+
+/* Ô chỉ số (st.metric) */
+[data-testid="metric-container"] {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid #d6eefc;
+  border-radius: 12px;
+  padding: 14px 18px;
+  box-shadow: 0 2px 10px rgba(60, 140, 200, 0.08);
+}
+
+/* Biểu đồ Plotly */
+.plot-container > div {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border: 1px solid #d6eefc;
+  border-radius: 12px;
+  padding: 4px;
+}
+
+/* Tab: dàn đều chiều ngang, tab đang chọn tô gradient */
+.stTabs [data-baseweb="tab-list"] {
+  background: rgba(255, 255, 255, 0.72);
+  border-radius: 12px;
+  padding: 4px;
+  border: 1px solid #d6eefc;
+  gap: 12px;
+  width: 100%;
+}
+.stTabs [data-baseweb="tab"] {
+  flex: 1;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #3730a3;
+}
+.stTabs [aria-selected="true"] {
+  background: linear-gradient(135deg, #4338ca, #6d28d9) !important;
+  color: white !important;
+  border-radius: 8px !important;
+}
+
+/* Nút bấm */
+.stButton > button,
+.stDownloadButton > button {
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s !important;
+}
+.stButton > button[kind="primary"],
+.stDownloadButton > button[kind="primary"] {
+  background: linear-gradient(135deg, #2ea6ff, #1687ff) !important;
+  border: none !important;
+  color: white !important;
+}
+.stButton > button[kind="primary"]:hover {
+  box-shadow: 0 4px 16px rgba(29, 78, 216, 0.35) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Bảng, khung mở rộng, hộp chọn, thông báo */
+.stDataFrame {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #d6eefc !important;
+}
+div[data-testid="stExpander"] {
+  border: 1px solid #d6eefc !important;
+  border-radius: 12px !important;
+  background: rgba(255, 255, 255, 0.72) !important;
+}
+.stSelectbox > div > div {
+  border-radius: 10px !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+}
+.stAlert {
+  border-radius: 10px !important;
+}
+
+/* Nhãn nhỏ dạng viên thuốc */
+.pill {
+  display: inline-block;
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid #b9e6ff;
+  margin: 0.15rem 0.2rem 0 0;
+  font-size: 0.83rem;
+  background: #edf9ff;
+  color: #1364b5;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+/* Tiêu đề phần, chữ phụ, đường kẻ */
+.section-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #0f5fa8;
+  margin-bottom: 0.4rem;
+}
+.muted {
+  opacity: 0.72;
+  line-height: 1.6;
+}
+.fancy-divider {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #c9eefe, #4fc3f7, transparent);
+  border: none;
+  margin: 18px 0;
+  border-radius: 2px;
+}
+
+/* Hiệu ứng xuất hiện nhẹ */
+.fade-in {
+  animation: fadeInUp 0.45s ease-out both;
+}
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fade-in,
+  .result-card {
+    animation: none;
+  }
+}
